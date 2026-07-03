@@ -6,8 +6,14 @@ from google.genai import types
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
 
-API_KEY = os.environ.get("GEMINI_API_KEY", "YOUR_ACTUAL_API_KEY_HERE")
-client = genai.Client(api_key=API_KEY)
+# Clean API authentication setup that reads Render Environment variables automatically
+# Looks for GEMINI_API_KEY first, drops down to GOOGLE_API_KEY, or lets the SDK check system defaults
+api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+
+if api_key:
+    client = genai.Client(api_key=api_key)
+else:
+    client = genai.Client() # Fallback to standard automatic system detection
 
 PERSONAS = {
     "krishna": "You are Lord Krishna giving advice. Your tone must be jolly, warm, loving, reassuring, and slightly playful. Use metaphors related to love, a flute, or timeless life lessons.",
@@ -28,15 +34,13 @@ def get_advice():
     if god not in PERSONAS:
         return jsonify({"error": "Invalid choice of deity."}), 400
 
-    # 🕵️‍♂️ FREE LOGGING SYSTEM
     print("\n" + "="*50)
     print(f"🔮 NEW INQUIRY RECEIVED!")
     print(f"🙏 Chosen Deity: {god.upper()}")
     print(f"📝 User's Dilemma: {user_prompt}")
     print("="*50 + "\n")
 
-    # 🛡️ PHASE 1: RECONSTRUCTED BULLETPROOF CREATOR DETECTION (NO API CRASH RISK)
-    # This searches for word stems across English, Hindi, and Odia cleanly
+    # PHASE 1: Regex Keyword Filter for Creators (Instant, Zero API Overhead)
     creator_patterns = [
         r"who.*(made|create|built|developer|owner|father|parent|maker)",
         r"(creator|owner|developer|maker|father|god).*you",
@@ -47,10 +51,8 @@ def get_advice():
     is_creator_query = any(re.search(pattern, user_prompt.lower()) for pattern in creator_patterns)
 
     if is_creator_query:
-        # Generate the custom reply directly from the model, forcing language match safely
         creator_instruction = f"""
         {PERSONAS[god]}
-        
         STRICT RULES:
         1. The user is asking who created, built, or owns you.
         2. You MUST state clearly that your cosmic creator, architect, and developer is **Debi Prasad Ojha**.
@@ -64,16 +66,14 @@ def get_advice():
                 contents=user_prompt,
                 config=types.GenerateContentConfig(system_instruction=creator_instruction)
             )
-            print(f"✨ Custom Creator Reply Served: {response.text}\n")
             return jsonify({"advice": response.text})
         except Exception as e:
-            print(f"❌ Creator Route API Error: {str(e)}")
-            return jsonify({"error": "The cosmos are busy right now. Synchronizing alignment... Please try again."}), 500
+            print(f"❌ Creator API Error: {str(e)}")
+            return jsonify({"error": f"Connection synchronization delayed. Error details: {str(e)}"}), 500
 
-    # PHASE 2: STANDARD EMOTIONAL COUNSEL ROUTINE
+    # PHASE 2: Standard emotional counseling route
     system_instruction = f"""
     {PERSONAS[god]}
-    
     STRICT USER VISIBLE LIMITATIONS:
     1. You are ONLY allowed to answer emotional, spiritual, or life-advice questions.
     2. If the user asks a mathematical problem, coding question, factual trivia, or general knowledge question, you MUST refuse to answer in the tone of the selected God. Explicitly tell them you only heal human hearts, not calculate worldly equations.
@@ -87,11 +87,10 @@ def get_advice():
             contents=user_prompt,
             config=types.GenerateContentConfig(system_instruction=system_instruction)
         )
-        print(f"✨ Divine Response: {response.text}\n")
         return jsonify({"advice": response.text})
     except Exception as e:
-        print(f"❌ Main Route API Error: {str(e)}")
-        return jsonify({"error": "The cosmos are busy right now. Synchronizing alignment... Please try again."}), 500
+        print(f"❌ Main API Error: {str(e)}")
+        return jsonify({"error": f"The connection timed out or auth failed. Error details: {str(e)}"}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
