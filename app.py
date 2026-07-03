@@ -1,4 +1,5 @@
 import os
+import re
 from flask import Flask, render_template, request, jsonify
 from google import genai
 from google.genai import types
@@ -34,26 +35,19 @@ def get_advice():
     print(f"📝 User's Dilemma: {user_prompt}")
     print("="*50 + "\n")
 
-    # 🛡️ PHASE 1: BULLETPROOF LANGUAGE-AGNOSTIC CREATOR CHECK
-    # We use a lightning-fast model check to classify if the prompt is asking about who made/owns the AI.
-    classification_instruction = """
-    Analyze the user input. Is the user asking who made them, who built them, who their creator, father, parent, master, developer, or owner is? 
-    This applies to any language including English, Hindi, Odia, or Hinglish/Odia-English mix words (e.g., 'taku kie banaichhi', 'kisne banaya', 'owner kon').
-    Respond with exactly one word: 'YES' if they are asking about their origin/creator/owner, or 'NO' if it is a general life/emotional question.
-    """
+    # 🛡️ PHASE 1: RECONSTRUCTED BULLETPROOF CREATOR DETECTION (NO API CRASH RISK)
+    # This searches for word stems across English, Hindi, and Odia cleanly
+    creator_patterns = [
+        r"who.*(made|create|built|developer|owner|father|parent|maker)",
+        r"(creator|owner|developer|maker|father|god).*you",
+        r"kisne.*banaya", r"banaichhi", r"tiari.*karichhi", r"owner.*kon", r"malik",
+        r"who.*is.*debi", r"who.*is.*ojha"
+    ]
     
-    try:
-        check_response = client.models.generate_content(
-            model='gemini-2.5-flash',
-            contents=user_prompt,
-            config=types.GenerateContentConfig(system_instruction=classification_instruction, temperature=0.0)
-        )
-        is_creator_query = "YES" in check_response.text.upper()
-    except Exception:
-        is_creator_query = False
+    is_creator_query = any(re.search(pattern, user_prompt.lower()) for pattern in creator_patterns)
 
-    # If it's a creator question, force the model to answer about you using the exact input language
     if is_creator_query:
+        # Generate the custom reply directly from the model, forcing language match safely
         creator_instruction = f"""
         {PERSONAS[god]}
         
@@ -68,12 +62,13 @@ def get_advice():
             response = client.models.generate_content(
                 model='gemini-2.5-flash',
                 contents=user_prompt,
-                config=types.GenerateContentConfig(system_instruction=creator_instruction, temperature=0.6)
+                config=types.GenerateContentConfig(system_instruction=creator_instruction)
             )
             print(f"✨ Custom Creator Reply Served: {response.text}\n")
             return jsonify({"advice": response.text})
         except Exception as e:
-            return jsonify({"error": "The cosmos are busy right now. Try again."}), 500
+            print(f"❌ Creator Route API Error: {str(e)}")
+            return jsonify({"error": "The cosmos are busy right now. Synchronizing alignment... Please try again."}), 500
 
     # PHASE 2: STANDARD EMOTIONAL COUNSEL ROUTINE
     system_instruction = f"""
@@ -90,12 +85,12 @@ def get_advice():
         response = client.models.generate_content(
             model='gemini-2.5-flash',
             contents=user_prompt,
-            config=types.GenerateContentConfig(system_instruction=system_instruction, temperature=0.7)
+            config=types.GenerateContentConfig(system_instruction=system_instruction)
         )
         print(f"✨ Divine Response: {response.text}\n")
         return jsonify({"advice": response.text})
     except Exception as e:
-        print(f"❌ ERROR ENCOUNTERED: {str(e)}")
+        print(f"❌ Main Route API Error: {str(e)}")
         return jsonify({"error": "The cosmos are busy right now. Synchronizing alignment... Please try again."}), 500
 
 if __name__ == '__main__':
