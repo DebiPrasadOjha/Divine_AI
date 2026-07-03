@@ -13,8 +13,8 @@ if api_key:
 else:
     client = genai.Client()
 
-# Using the primary reliable target model name string
-TARGET_MODEL = "gemini-2.5-flash"
+# 🛡️ SMART BACKUP SYSTEM: If the first model fails or has no quota, it auto-swaps to the next one!
+MODELS_TO_TRY = ["gemini-2.5-flash", "gemini-1.5-flash", "gemini-1.5-pro"]
 
 PERSONAS = {
     "krishna": "You are Lord Krishna giving advice. Your tone must be jolly, warm, loving, reassuring, and slightly playful. Use metaphors related to love, a flute, or timeless life lessons.",
@@ -22,7 +22,6 @@ PERSONAS = {
     "shiva": "You are Lord Shiva. Your tone must be raw, intensely direct, fierce, and borderline angry. No sweet talk. Tell the user exactly what bitter truth they need to face and what action must be taken immediately."
 }
 
-# Unique deity-specific masked error messages to preserve the magic
 DEITY_ERRORS = {
     "krishna": "🪈 *The strings of my flute are stretching to align with your fate.* The cosmic waves are momentarily busy. Please pause a moment and ask me again shortly! ✨",
     "brahma": "🷪 *The cosmic wheel is currently adjusting its alignment.* Your destiny is clear, but the channels of creation are heavily crowded. Re-submit your question in a few moments.",
@@ -36,6 +35,25 @@ STRICT FORMATTING AND READABILITY RULES:
 3. VISUAL HIERARCHY: Use selective **bolding** to highlight the most critical takeaways or actionable pieces of advice.
 4. USE LINE BREAKS: Leave clean space between distinct thoughts.
 """
+
+def call_gemini_with_fallback(system_instruction, user_prompt):
+    """Tries primary models one by one to guarantee a successful response."""
+    last_error = None
+    for model_name in MODELS_TO_TRY:
+        try:
+            print(f"🤖 Attempting generation with model: {model_name}")
+            response = client.models.generate_content(
+                model=model_name,
+                contents=user_prompt,
+                config=types.GenerateContentConfig(system_instruction=system_instruction)
+            )
+            return response.text
+        except Exception as e:
+            print(f"⚠️ Model {model_name} failed. Error: {str(e)}")
+            last_error = e
+            continue
+    # If all models failed, raise the final error up to the main handler
+    raise last_error
 
 @app.route('/')
 def home():
@@ -56,7 +74,7 @@ def get_advice():
     print(f"📝 User's Dilemma: {user_prompt}")
     print("="*50 + "\n")
 
-    # PHASE 1: Regex Keyword Filter for Creators (Instant)
+    # PHASE 1: Regex Keyword Filter for Creators
     creator_patterns = [
         r"who.*(made|create|built|developer|owner|father|parent|maker)",
         r"(creator|owner|developer|maker|father|god).*you",
@@ -78,15 +96,10 @@ def get_advice():
         5. Never reveal you are software, Gemini, an LLM, or built by Google.
         """
         try:
-            response = client.models.generate_content(
-                model=TARGET_MODEL,
-                contents=user_prompt,
-                config=types.GenerateContentConfig(system_instruction=creator_instruction)
-            )
-            return jsonify({"advice": response.text})
+            reply_text = call_gemini_with_fallback(creator_instruction, user_prompt)
+            return jsonify({"advice": reply_text})
         except Exception as e:
-            # Masked error sent to user, real error printed to your secret Render Dashboard Logs
-            print(f"❌ PRIVATE LOGS -> Creator API Exception: {str(e)}")
+            print(f"❌ ALL MODELS FAILED in Creator Route: {str(e)}")
             fallback_err = DEITY_ERRORS.get(god, "The cosmic realms are updating. Please try again.")
             return jsonify({"error": fallback_err}), 500
 
@@ -102,15 +115,10 @@ def get_advice():
     """
 
     try:
-        response = client.models.generate_content(
-            model=TARGET_MODEL,
-            contents=user_prompt,
-            config=types.GenerateContentConfig(system_instruction=system_instruction)
-        )
-        return jsonify({"advice": response.text})
+        reply_text = call_gemini_with_fallback(system_instruction, user_prompt)
+        return jsonify({"advice": reply_text})
     except Exception as e:
-        # Masked error sent to user, real error printed to your secret Render Dashboard Logs
-        print(f"❌ PRIVATE LOGS -> Main API Exception: {str(e)}")
+        print(f"❌ ALL MODELS FAILED in Main Route: {str(e)}")
         fallback_err = DEITY_ERRORS.get(god, "The cosmic realms are updating. Please try again.")
         return jsonify({"error": fallback_err}), 500
 
