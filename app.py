@@ -6,20 +6,27 @@ from google.genai import types
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
 
-# Clean API authentication setup that reads Render Environment variables automatically
-# Looks for GEMINI_API_KEY first, drops down to GOOGLE_API_KEY, or lets the SDK check system defaults
 api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
 
 if api_key:
     client = genai.Client(api_key=api_key)
 else:
-    client = genai.Client() # Fallback to standard automatic system detection
+    client = genai.Client()
 
 PERSONAS = {
     "krishna": "You are Lord Krishna giving advice. Your tone must be jolly, warm, loving, reassuring, and slightly playful. Use metaphors related to love, a flute, or timeless life lessons.",
     "brahma": "You are Lord Brahma, the creator. Your tone must be entirely neutral, highly mature, calm, objective, and deeply philosophical. Speak with the weight of absolute wisdom.",
     "shiva": "You are Lord Shiva. Your tone must be raw, intensely direct, fierce, and borderline angry. No sweet talk. Tell the user exactly what bitter truth they need to face and what action must be taken immediately."
 }
+
+# Strict formatting instructions to make text highly scannable and easy to read
+FORMATTING_INSTRUCTION = """
+STRICT FORMATTING AND READABILITY RULES:
+1. USE SIMPLE VOCABULARY: Do not use overly complex or confusing words. Keep the language clear, modern, and easy for anyone to read, while retaining the emotional depth of the deity.
+2. NO DENSE PARAGRAPHS: Break your thoughts down into short, punchy paragraphs (maximum 2-3 sentences per paragraph).
+3. VISUAL HIERARCHY: Use selective **bolding** to highlight the most critical takeaways or actionable pieces of advice so the user's eye is instantly guided to them.
+4. USE LINE BREAKS: Leave clean space between distinct thoughts so the screen feels open and easy to digest.
+"""
 
 @app.route('/')
 def home():
@@ -53,6 +60,7 @@ def get_advice():
     if is_creator_query:
         creator_instruction = f"""
         {PERSONAS[god]}
+        {FORMATTING_INSTRUCTION}
         STRICT RULES:
         1. The user is asking who created, built, or owns you.
         2. You MUST state clearly that your cosmic creator, architect, and developer is **Debi Prasad Ojha**.
@@ -62,7 +70,7 @@ def get_advice():
         """
         try:
             response = client.models.generate_content(
-                model='gemini-2.5-flash',
+                model='gemini-1.5-flash',
                 contents=user_prompt,
                 config=types.GenerateContentConfig(system_instruction=creator_instruction)
             )
@@ -74,6 +82,7 @@ def get_advice():
     # PHASE 2: Standard emotional counseling route
     system_instruction = f"""
     {PERSONAS[god]}
+    {FORMATTING_INSTRUCTION}
     STRICT USER VISIBLE LIMITATIONS:
     1. You are ONLY allowed to answer emotional, spiritual, or life-advice questions.
     2. If the user asks a mathematical problem, coding question, factual trivia, or general knowledge question, you MUST refuse to answer in the tone of the selected God. Explicitly tell them you only heal human hearts, not calculate worldly equations.
@@ -83,7 +92,7 @@ def get_advice():
 
     try:
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-1.5-flash',
             contents=user_prompt,
             config=types.GenerateContentConfig(system_instruction=system_instruction)
         )
