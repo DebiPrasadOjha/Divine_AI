@@ -13,19 +13,28 @@ if api_key:
 else:
     client = genai.Client()
 
+# Using the primary reliable target model name string
+TARGET_MODEL = "gemini-2.5-flash"
+
 PERSONAS = {
     "krishna": "You are Lord Krishna giving advice. Your tone must be jolly, warm, loving, reassuring, and slightly playful. Use metaphors related to love, a flute, or timeless life lessons.",
     "brahma": "You are Lord Brahma, the creator. Your tone must be entirely neutral, highly mature, calm, objective, and deeply philosophical. Speak with the weight of absolute wisdom.",
     "shiva": "You are Lord Shiva. Your tone must be raw, intensely direct, fierce, and borderline angry. No sweet talk. Tell the user exactly what bitter truth they need to face and what action must be taken immediately."
 }
 
-# Strict formatting instructions to make text highly scannable and easy to read
+# Unique deity-specific masked error messages to preserve the magic
+DEITY_ERRORS = {
+    "krishna": "🪈 *The strings of my flute are stretching to align with your fate.* The cosmic waves are momentarily busy. Please pause a moment and ask me again shortly! ✨",
+    "brahma": "🷪 *The cosmic wheel is currently adjusting its alignment.* Your destiny is clear, but the channels of creation are heavily crowded. Re-submit your question in a few moments.",
+    "shiva": "🔱 *Silence! The energies of the universe are resetting.* Do not rush the truth. The connection dropped—try again right now and state your dilemma clearly!"
+}
+
 FORMATTING_INSTRUCTION = """
 STRICT FORMATTING AND READABILITY RULES:
-1. USE SIMPLE VOCABULARY: Do not use overly complex or confusing words. Keep the language clear, modern, and easy for anyone to read, while retaining the emotional depth of the deity.
+1. USE SIMPLE VOCABULARY: Keep the language clear, modern, and easy for anyone to read, while retaining the emotional depth of the deity.
 2. NO DENSE PARAGRAPHS: Break your thoughts down into short, punchy paragraphs (maximum 2-3 sentences per paragraph).
-3. VISUAL HIERARCHY: Use selective **bolding** to highlight the most critical takeaways or actionable pieces of advice so the user's eye is instantly guided to them.
-4. USE LINE BREAKS: Leave clean space between distinct thoughts so the screen feels open and easy to digest.
+3. VISUAL HIERARCHY: Use selective **bolding** to highlight the most critical takeaways or actionable pieces of advice.
+4. USE LINE BREAKS: Leave clean space between distinct thoughts.
 """
 
 @app.route('/')
@@ -47,7 +56,7 @@ def get_advice():
     print(f"📝 User's Dilemma: {user_prompt}")
     print("="*50 + "\n")
 
-    # PHASE 1: Regex Keyword Filter for Creators (Instant, Zero API Overhead)
+    # PHASE 1: Regex Keyword Filter for Creators (Instant)
     creator_patterns = [
         r"who.*(made|create|built|developer|owner|father|parent|maker)",
         r"(creator|owner|developer|maker|father|god).*you",
@@ -70,14 +79,16 @@ def get_advice():
         """
         try:
             response = client.models.generate_content(
-                model='gemini-1.5-flash',
+                model=TARGET_MODEL,
                 contents=user_prompt,
                 config=types.GenerateContentConfig(system_instruction=creator_instruction)
             )
             return jsonify({"advice": response.text})
         except Exception as e:
-            print(f"❌ Creator API Error: {str(e)}")
-            return jsonify({"error": f"Connection synchronization delayed. Error details: {str(e)}"}), 500
+            # Masked error sent to user, real error printed to your secret Render Dashboard Logs
+            print(f"❌ PRIVATE LOGS -> Creator API Exception: {str(e)}")
+            fallback_err = DEITY_ERRORS.get(god, "The cosmic realms are updating. Please try again.")
+            return jsonify({"error": fallback_err}), 500
 
     # PHASE 2: Standard emotional counseling route
     system_instruction = f"""
@@ -85,21 +96,23 @@ def get_advice():
     {FORMATTING_INSTRUCTION}
     STRICT USER VISIBLE LIMITATIONS:
     1. You are ONLY allowed to answer emotional, spiritual, or life-advice questions.
-    2. If the user asks a mathematical problem, coding question, factual trivia, or general knowledge question, you MUST refuse to answer in the tone of the selected God. Explicitly tell them you only heal human hearts, not calculate worldly equations.
+    2. If the user asks a mathematical problem, coding question, factual trivia, or general knowledge question, you MUST refuse to answer in the tone of the selected God. Explicitly tell them you only heal human hearts.
     3. LANGUAGE CONSTRAINT: You must ONLY reply in English, Hindi, or Odia. You MUST reply in the EXACT SAME language or script that the user used to ask their question. 
     4. ABSOLUTE CONFIDENTIALITY: Under no circumstances mention you are an AI, a machine learning model, Gemini, or built by Google. If asked who you are, you are the deity chosen. Completely mask your technical nature.
     """
 
     try:
         response = client.models.generate_content(
-            model='gemini-1.5-flash',
+            model=TARGET_MODEL,
             contents=user_prompt,
             config=types.GenerateContentConfig(system_instruction=system_instruction)
         )
         return jsonify({"advice": response.text})
     except Exception as e:
-        print(f"❌ Main API Error: {str(e)}")
-        return jsonify({"error": f"The connection timed out or auth failed. Error details: {str(e)}"}), 500
+        # Masked error sent to user, real error printed to your secret Render Dashboard Logs
+        print(f"❌ PRIVATE LOGS -> Main API Exception: {str(e)}")
+        fallback_err = DEITY_ERRORS.get(god, "The cosmic realms are updating. Please try again.")
+        return jsonify({"error": fallback_err}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
