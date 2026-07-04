@@ -26,112 +26,29 @@
             width: 100%;
             max-width: 500px;
             text-align: center;
-            position: relative;
         }
-        h1 { color: #ffffff; margin-bottom: 5px; font-weight: 600; padding-right: 40px; }
-        .subtitle { font-size: 14px; color: #8b949e; margin-bottom: 25px; padding-right: 40px; }
+        h1 { color: #ffffff; margin-bottom: 5px; font-weight: 600; }
+        .subtitle { font-size: 14px; color: #8b949e; margin-bottom: 25px; }
         
-        /* Feature Info Button */
-        .info-trigger {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: none;
-            border: 1px solid #21262d;
-            color: var(--accent-gold);
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-        }
-        .info-trigger:hover {
-            background-color: #21262d;
-            transform: scale(1.05);
-        }
-
-        /* Features Pop-up Overlay Container */
-        .info-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.75);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        .modal-content {
-            background-color: var(--card-bg);
-            border: 2px solid var(--accent-gold);
-            border-radius: 16px;
-            max-width: 400px;
-            width: 100%;
-            padding: 25px;
-            text-align: left;
-            position: relative;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .modal-title {
-            color: #ffffff;
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #21262d;
-            padding-bottom: 8px;
-        }
-        .modal-list {
-            list-style: none;
-            padding: 0;
-            margin: 0 0 20px 0;
-        }
-        .modal-list li {
-            font-size: 14px;
-            line-height: 1.5;
-            margin-bottom: 12px;
-            color: #e6edf3;
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-        }
-        .close-modal-btn {
-            background-color: #21262d;
-            border: 1px solid #30363d;
-            color: #ffffff;
-            padding: 10px;
-            font-size: 14px;
-            font-weight: 500;
-            border-radius: 8px;
-            cursor: pointer;
-            width: 100%;
-        }
-        .close-modal-btn:hover { background-color: #30363d; }
-
-        /* Traditional Spiritual Divider */
+        /* Mystic Sun & Dot Divider (Replaces Gemini Sparkles) */
         .spiritual-divider {
             margin: 15px auto 25px auto;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
+            color: var(--accent-gold);
+            font-size: 14px;
+            letter-spacing: 2px;
         }
         .spiritual-divider .line {
-            width: 60px;
+            width: 80px;
             height: 1px;
             background: linear-gradient(to right, transparent, var(--accent-gold), transparent);
         }
-        .spiritual-divider .dot {
-            width: 5px;
-            height: 5px;
-            background-color: var(--accent-gold);
-            border-radius: 50%;
+        .spiritual-divider .symbol {
+            font-weight: bold;
+            opacity: 0.9;
         }
 
         /* Deity Selection Cards */
@@ -174,7 +91,7 @@
         }
         textarea:focus { border-color: #388bfd; }
         
-        .counsel-btn {
+        button {
             width: 100%;
             background-color: #238636;
             color: #ffffff;
@@ -186,8 +103,8 @@
             cursor: pointer;
             transition: background 0.2s;
         }
-        .counsel-btn:hover { background-color: #2ea043; }
-        .counsel-btn:disabled { background-color: #21262d; color: #8b949e; cursor: not-allowed; }
+        button:hover { background-color: #2ea043; }
+        button:disabled { background-color: #21262d; color: #8b949e; cursor: not-allowed; }
 
         /* Custom Structured Output Box */
         .output-box {
@@ -210,16 +127,13 @@
 <body>
 
 <div class="container">
-    <!-- Info Button for Guide Info Toggle -->
-    <button class="info-trigger" onclick="toggleModal(true)">ℹ</button>
-
     <h1>Divine Counsel</h1>
+    <div class="subtitle">Receive timeless perspective on life's complications</div>
     
+    <!-- Clean, branded-free spiritual accent element -->
     <div class="spiritual-divider">
         <div class="line"></div>
-        <div class="dot"></div>
-        <div class="dot" style="width: 7px; height: 7px;"></div>
-        <div class="dot"></div>
+        <div class="symbol">• ☼ •</div>
         <div class="line"></div>
     </div>
 
@@ -241,44 +155,27 @@
 
     <!-- Interface Prompt Canvas -->
     <textarea id="userPrompt" rows="6" placeholder="State your dilemma clearly, ask about your relationship patterns, or input your birth sign for astrological guidance..."></textarea>
-    <button id="submitBtn" class="counsel-btn" onclick="seekCounsel()">Seek Counsel</button>
+    <button id="submitBtn" onclick="seekCounsel()">Seek Counsel</button>
 
     <!-- Structured Render Output Display -->
     <div class="output-box" id="outputCard"></div>
 </div>
 
-<!-- Modal Pop-up Box for Brief Feature Overview -->
-<div class="info-modal" id="featuresModal">
-    <div class="modal-content">
-        <div class="modal-title">📜 Cosmic Capability Ledger</div>
-        <ul class="modal-list">
-            <li>✨ <span><strong>Scriptural Integration:</strong> The Deities explicitly reference verses from the Bhagavad Gita, Upanishads, and historic Puranas.</span></li>
-            <li>💖 <span><strong>Love & Dynamics:</strong> Complete guidance on relationship hurdles, emotional attachment, and heartbreak dynamics.</span></li>
-            <li>🔮 <span><strong>Astrological Illumination:</strong> Input birth signs or details to receive Surya/Chandra Rashi remedies and planetary breakdown alignments.</span></li>
-            <li>🎵 <span><strong>Acoustic Resonance:</strong> Traditional, unique instrumentation cues trigger on selection and counselor queries.</span></li>
-        </ul>
-        <button class="close-modal-btn" onclick="toggleModal(false)">Close Guide</button>
-    </div>
-</div>
-
 <script>
     let selectedGod = '';
 
+    // Audio tracking map for local instrumental cues
     const tracks = {
         'krishna': '/static/flute.mp3',
         'shiva': '/static/dambru.mp3',
         'brahma': '/static/om.mp3'
     };
 
-    function toggleModal(show) {
-        document.getElementById('featuresModal').style.display = show ? 'flex' : 'none';
-    }
-
     function executeTrack(god) {
         if (tracks[god]) {
             let audioObj = new Audio(tracks[god]);
             audioObj.volume = 0.5;
-            audioObj.play().catch(err => console.log("Audio trigger blocked."));
+            audioObj.play().catch(err => console.log("Audio trigger blocked until user action occurs."));
         }
     }
 
@@ -286,6 +183,8 @@
         selectedGod = god;
         document.querySelectorAll('.deity-card').forEach(card => card.classList.remove('active'));
         document.getElementById(`card-${god}`).classList.add('active');
+        
+        // Immediate audio sound on deck click
         executeTrack(god);
     }
 
@@ -303,6 +202,7 @@
             return;
         }
 
+        // Play audio track again right as they submit the question
         executeTrack(selectedGod);
 
         submitBtn.disabled = true;
