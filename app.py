@@ -1,17 +1,23 @@
 import os
 import sys
+import traceback
 from flask import Flask, render_template, request, jsonify
 import google.generativeai as genai
 
 app = Flask(__name__)
 
-# Reverting back to environment variables to pass GitHub's secret scanner security checks
+# Fetch the API key safely from Render Settings
 API_KEY = os.environ.get("GEMINI_API_KEY")
 
 if API_KEY:
-    genai.configure(api_key=API_KEY)
+    try:
+        genai.configure(api_key=API_KEY)
+    except Exception as e:
+        print("--- RENDER LOG ERROR: CONFIGURATION FAILED ---", file=sys.stderr, flush=True)
+        traceback.print_exc(file=sys.stderr)
+        sys.stderr.flush()
 else:
-    print("LOG ERROR: GEMINI_API_KEY environment variable is not set yet.", file=sys.stderr, flush=True)
+    print("--- RENDER LOG ERROR: GEMINI_API_KEY IS MISSING IN ENVIRONMENT ---", file=sys.stderr, flush=True)
 
 DEITY_PROMPTS = {
     "krishna": "You are Lord Krishna. Provide warm, playful, deeply reassuring, and comforting advice. Use gentle wisdom.",
@@ -26,25 +32,28 @@ def home():
 @app.route('/get-advice', methods=['POST'])
 def get_advice():
     try:
-        # Final fallback safety check to avoid silent 500 exceptions on the frontend UI
+        # Check variable before parsing payload
         if not os.environ.get("GEMINI_API_KEY"):
-            print("LOG ERROR: API request dropped because GEMINI_API_KEY is completely missing from Render.", file=sys.stderr, flush=True)
+            print("--- RENDER LOG ERROR: REQUEST DECLINED, NO KEY FOUND ---", file=sys.stderr, flush=True)
             return jsonify({"status": "failed"}), 500
 
         data = request.get_json()
         if not data:
+            print("--- RENDER LOG ERROR: PAYLOAD IS EMPTY OR MALFORMED ---", file=sys.stderr, flush=True)
             return jsonify({"status": "failed"}), 400
 
         selected_god = data.get('god', '').lower()
         user_prompt = data.get('prompt', '').strip()
 
         if not selected_god or not user_prompt:
+            print(f"--- RENDER LOG ERROR: MISSING DATA. GOD: {selected_god}, PROMPT: {bool(user_prompt)} ---", file=sys.stderr, flush=True)
             return jsonify({"status": "failed"}), 400
 
         if selected_god not in DEITY_PROMPTS:
+            print(f"--- RENDER LOG ERROR: INVALID GOD ATTEMPTED: {selected_god} ---", file=sys.stderr, flush=True)
             return jsonify({"status": "failed"}), 400
 
-        # Execute content generation
+        # Run Generation Process
         system_instruction = DEITY_PROMPTS[selected_god]
         model = genai.GenerativeModel(
             model_name="gemini-1.5-flash",
@@ -56,11 +65,14 @@ def get_advice():
         if response and response.text:
             return jsonify({"advice": response.text})
         else:
-            print("LOG ERROR: Gemini engine returned an empty response.", file=sys.stderr, flush=True)
+            print("--- RENDER LOG ERROR: GEMINI SENT AN EMPTY RESPONSE STRING ---", file=sys.stderr, flush=True)
             return jsonify({"status": "failed"}), 500
 
     except Exception as e:
-        print(f"LOG EXCEPTION: {str(e)}", file=sys.stderr, flush=True)
+        # Pushes the complete full raw traceback stack to your Render logs terminal view
+        print("--- RENDER LOG ERROR: CRITICAL RUNTIME CRASH ---", file=sys.stderr, flush=True)
+        traceback.print_exc(file=sys.stderr)
+        sys.stderr.flush()
         return jsonify({"status": "failed"}), 500
 
 if __name__ == '__main__':
