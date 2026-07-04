@@ -19,7 +19,7 @@ if API_KEY:
 else:
     print("--- RENDER LOG ERROR: GEMINI_API_KEY IS MISSING IN ENVIRONMENT ---", file=sys.stderr, flush=True)
 
-# Enforcing ancient scripture referencing, dynamic Option A astrological calculations, simple vocabulary, and symbol swaps
+# Added rule instructing the model to request missing parameters directly if needed
 STRUCTURED_RULE = (
     "\n\nVOCABULARY RULE:\n"
     "Do not use complex, academic, or heavy philosophical words (avoid words like 'ascribed', 'perceiver', 'indivisible', 'delineation', or 'inherent'). "
@@ -29,12 +29,13 @@ STRUCTURED_RULE = (
     "ASTROLOGY CAPABILITY:\n"
     "If the user shares their Date of Birth (DOB), time, or location of birth, or asks questions about future events (like marriage, jobs, or compatibility), "
     "you must analyze their information to determine or approximate their Sun sign, Moon sign, and compatibility matches. "
-    "Include these specific placements directly inside the ASTROLOGICAL ASSESMENT block below.\n\n"
+    "If the user did NOT provide enough information (such as missing their exact time of birth or city of birth) to give an accurate Moon sign or precise timeline prediction, "
+    "you MUST explicitly list out exactly what missing pieces they should type in next time to unlock their full chart reading (e.g., 'To see your Moon sign and exact house timing, please reply with your exact time of birth and city of birth.').\n\n"
     "You MUST format the entire output using these exact four text blocks layout (do not change the block names or labels):\n\n"
     "📜 DIVINE VERSE:\n"
     "[Provide a simple, easy-to-understand quote or paraphrased lesson from an ancient text like the Bhagavad Gita or Upanishads that fits the user's issue. Include the scripture name.]\n\n"
     "🌌 ASTROLOGICAL ASSESMENT:\n"
-    "[If the user gave details like DOB, place, or compatibility questions, calculate their Sun sign/Moon sign and give direct timeline answers or compatibility predictions. If they did not provide a DOB, give a general cosmic transit assessment about how planetary alignments are shifting their current situation. Use very simple terms.]\n\n"
+    "[Calculate their Sun sign/Moon sign based on provided parameters. If data is incomplete, explicitly prompt the user for the missing details (birth time, location) so they know what to type next, alongside a general transit assessment. Keep the vocabulary extremely basic.]\n\n"
     "🔮 THE TRANSMISSION:\n"
     "[Deliver your core personal advice here matching your assigned deity archetype. Keep the language direct, clear, and basic, dropping all high-level vocabulary words.]\n\n"
     "🕉️ MEDITATION PATH:\n"
@@ -97,5 +98,3 @@ def get_advice():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
