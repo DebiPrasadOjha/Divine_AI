@@ -53,8 +53,10 @@ def get_advice():
             return jsonify({"status": "failed"}), 400
 
         system_instruction = DEITY_PROMPTS[selected_god]
+        
+        # Swapped target model identifier to the updated active tier to clear the Google API 404 exception
         model = genai.GenerativeModel(
-            model_name="gemini-1.5-flash",
+            model_name="gemini-2.5-flash",
             system_instruction=system_instruction
         )
         
