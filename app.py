@@ -5,12 +5,13 @@ import google.generativeai as genai
 
 app = Flask(__name__)
 
-# Safely handle configuration
+# Reverting back to environment variables to pass GitHub's secret scanner security checks
 API_KEY = os.environ.get("GEMINI_API_KEY")
+
 if API_KEY:
     genai.configure(api_key=API_KEY)
 else:
-    print("CRITICAL LOG ERROR: GEMINI_API_KEY environment variable is missing completely!", file=sys.stderr, flush=True)
+    print("LOG ERROR: GEMINI_API_KEY environment variable is not set yet.", file=sys.stderr, flush=True)
 
 DEITY_PROMPTS = {
     "krishna": "You are Lord Krishna. Provide warm, playful, deeply reassuring, and comforting advice. Use gentle wisdom.",
@@ -25,27 +26,25 @@ def home():
 @app.route('/get-advice', methods=['POST'])
 def get_advice():
     try:
+        # Final fallback safety check to avoid silent 500 exceptions on the frontend UI
+        if not os.environ.get("GEMINI_API_KEY"):
+            print("LOG ERROR: API request dropped because GEMINI_API_KEY is completely missing from Render.", file=sys.stderr, flush=True)
+            return jsonify({"status": "failed"}), 500
+
         data = request.get_json()
         if not data:
-            print("LOG WARNING: Received empty request payload.", file=sys.stderr, flush=True)
             return jsonify({"status": "failed"}), 400
 
         selected_god = data.get('god', '').lower()
         user_prompt = data.get('prompt', '').strip()
 
         if not selected_god or not user_prompt:
-            print("LOG WARNING: Missing god selection or prompt input fields.", file=sys.stderr, flush=True)
             return jsonify({"status": "failed"}), 400
 
         if selected_god not in DEITY_PROMPTS:
-            print(f"LOG WARNING: Invalid deity selection attempted: {selected_god}", file=sys.stderr, flush=True)
             return jsonify({"status": "failed"}), 400
 
-        if not os.environ.get("GEMINI_API_KEY"):
-            print("CRITICAL LOG ERROR: Request dropped. GEMINI_API_KEY environment variable is not set on Render dashboard.", file=sys.stderr, flush=True)
-            return jsonify({"status": "failed"}), 500
-
-        # Run AI Generation
+        # Execute content generation
         system_instruction = DEITY_PROMPTS[selected_god]
         model = genai.GenerativeModel(
             model_name="gemini-1.5-flash",
@@ -57,12 +56,11 @@ def get_advice():
         if response and response.text:
             return jsonify({"advice": response.text})
         else:
-            print("LOG ERROR: Gemini engine generated an empty response string.", file=sys.stderr, flush=True)
+            print("LOG ERROR: Gemini engine returned an empty response.", file=sys.stderr, flush=True)
             return jsonify({"status": "failed"}), 500
 
     except Exception as e:
-        # Technical errors are printed straight to terminal logs, completely out of sight from users
-        print(f"CRITICAL BACKEND EXCEPTION ENCOUNTERED: {str(e)}", file=sys.stderr, flush=True)
+        print(f"LOG EXCEPTION: {str(e)}", file=sys.stderr, flush=True)
         return jsonify({"status": "failed"}), 500
 
 if __name__ == '__main__':
