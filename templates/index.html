@@ -117,7 +117,11 @@
             
             if(!prompt.trim()) return alert("Speak your mind first.");
 
-            if(/[\d+\-*/=]/.test(prompt) && (prompt.includes('+') || prompt.includes('*') || prompt.includes('/') || prompt.includes('-'))) {
+            // Fixed math validation logic to ignore regular text timestamps like "1.17 pm" or standard punctuation commas
+            const containsMathOperators = /[\+\*\/=]/.test(prompt);
+            const containsMathSubtraction = /(?<!\b\w+)-(?!\b\w+)/.test(prompt); // Only triggers if '-' is standalone, not inside standard punctuation strings
+
+            if(containsMathOperators || containsMathSubtraction) {
                 container.classList.add('shake-element');
                 setTimeout(() => container.classList.remove('shake-element'), 400);
                 outputBox.classList.remove('hidden');
