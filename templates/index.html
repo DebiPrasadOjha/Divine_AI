@@ -3,227 +3,201 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Divine Counsel AI</title>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <title>Cosmic Counsel AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-color: #0d1117;
-            --card-bg: #161b22;
-            --accent-gold: #ff9f43;
-            --text-color: #c9d1d9;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .container {
-            width: 100%;
-            max-width: 500px;
-            text-align: center;
-        }
-        h1 { 
-            color: #ffffff; 
-            margin-bottom: 5px; 
-            font-weight: 600; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        .subtitle { font-size: 14px; color: #8b949e; margin-bottom: 25px; }
+        body { font-family: 'Poppins', sans-serif; background: radial-gradient(circle at center, #131131 0%, #05030a 100%); color: #f8fafc; }
+        .cosmic-title { font-family: 'Cinzel', serif; }
+        .god-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .god-card:hover { transform: translateY(-6px); box-shadow: 0 10px 25px -5px rgba(234, 179, 8, 0.2); }
         
-        /* Styled Sun Icon replacing the Gemini Stars */
-        .vibe-symbol {
-            color: var(--accent-gold);
-            font-size: 20px;
-            display: inline-block;
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
         }
-
-        /* Deity Selection Cards */
-        .deity-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 25px;
-        }
-        .deity-card {
-            background-color: var(--card-bg);
-            border: 2px solid #21262d;
-            border-radius: 12px;
-            padding: 18px 5px;
-            cursor: pointer;
-            transition: all 0.25s ease;
-        }
-        .deity-card:hover { border-color: #30363d; }
-        .deity-card.active {
-            border-color: var(--accent-gold);
-            background-color: #1f242c;
-            transform: scale(1.03);
-        }
-        .deity-emoji { font-size: 30px; margin-bottom: 5px; }
-        .deity-name { font-size: 13px; font-weight: 600; color: #f0f6fc; }
-
-        /* Text Input */
-        textarea {
-            width: 100%;
-            box-sizing: border-box;
-            background-color: var(--card-bg);
-            border: 1px solid #21262d;
-            border-radius: 12px;
-            padding: 14px;
-            color: #ffffff;
-            font-size: 15px;
-            resize: none;
-            margin-bottom: 15px;
-            outline: none;
-        }
-        textarea:focus { border-color: #388bfd; }
-        
-        button {
-            width: 100%;
-            background-color: #238636;
-            color: #ffffff;
-            border: none;
-            padding: 14px;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        button:hover { background-color: #2ea043; }
-        button:disabled { background-color: #21262d; color: #8b949e; cursor: not-allowed; }
-
-        /* Custom Structured Output Box */
-        .output-box {
-            margin-top: 25px;
-            background-color: #161b22;
-            border: 1px solid #21262d;
-            border-radius: 12px;
-            padding: 20px;
-            text-align: left;
-            display: none;
-            line-height: 1.6;
-            font-size: 15px;
-        }
-        .output-box p { margin-top: 0; margin-bottom: 14px; }
-        .output-box ul { margin-top: 0; padding-left: 20px; margin-bottom: 14px; }
-        .output-box li { margin-bottom: 6px; }
-        .output-box strong { color: var(--accent-gold); }
+        .shake-element { animation: shake 0.4s ease-in-out; }
     </style>
 </head>
-<body>
+<body class="flex flex-col items-center justify-center min-h-screen p-4 relative overflow-x-hidden">
 
-<div class="container">
-    <!-- Restored precise header with custom vibe symbol -->
-    <h1><span class="vibe-symbol">☼</span> Divine Counsel <span class="vibe-symbol">☼</span></h1>
-    <div class="subtitle">Receive timeless perspective on life's complications</div>
-    
-    <!-- Deity Layout Grid -->
-    <div class="deity-grid">
-        <div class="deity-card" id="card-krishna" onclick="selectDeity('krishna')">
-            <div class="deity-emoji">🪈</div>
-            <div class="deity-name">Lord Krishna</div>
+    <div class="max-w-md w-full text-center space-y-8 bg-slate-950/70 p-6 rounded-3xl border border-purple-500/10 backdrop-blur-md relative z-10">
+        <!-- Replaced ✨ sparkles with traditional 🕉 Om symbols for pure spiritual branding alignment -->
+        <h1 class="cosmic-title text-3xl font-black text-amber-400 tracking-widest drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]">🕉 COSMIC COUNSEL 🕉</h1>
+        <p class="text-xs text-slate-400 tracking-wider uppercase">Seek emotional clarity. No equations. Only divine reality.</p>
+
+        <!-- STEP 1: SELECT DEITY -->
+        <div id="step-1" class="space-y-6">
+            <h2 class="text-sm font-medium text-slate-300 tracking-wide">Whose presence do you summon?</h2>
+            <div class="grid grid-cols-1 gap-4">
+                <button onclick="selectDeity('krishna')" class="god-card w-full p-4 bg-amber-950/20 border border-amber-500/30 rounded-2xl flex items-center justify-between group">
+                    <div class="text-left">
+                        <span class="block text-lg font-bold text-amber-300">🪈 Lord Krishna</span>
+                        <span class="text-xs text-slate-400">Warm, playful, reassuring & jolly advice</span>
+                    </div>
+                    <span class="text-xl opacity-40 group-hover:opacity-100 transition-all">→</span>
+                </button>
+                <button onclick="selectDeity('brahma')" class="god-card w-full p-4 bg-purple-950/20 border border-purple-500/30 rounded-2xl flex items-center justify-between group">
+                    <div class="text-left">
+                        <span class="block text-lg font-bold text-purple-300">🪷 Lord Brahma</span>
+                        <span class="text-xs text-slate-400">Highly objective, stable & mature wisdom</span>
+                    </div>
+                    <span class="text-xl opacity-40 group-hover:opacity-100 transition-all">→</span>
+                </button>
+                <button onclick="selectDeity('shiva')" class="god-card w-full p-4 bg-blue-950/20 border border-blue-500/30 rounded-2xl flex items-center justify-between group">
+                    <div class="text-left">
+                        <span class="block text-lg font-bold text-blue-300">🔱 Lord Shiva</span>
+                        <span class="text-xs text-red-400/80 font-semibold">⚠️ Raw, aggressive, intense reality</span>
+                    </div>
+                    <span class="text-xl opacity-40 group-hover:opacity-100 transition-all">→</span>
+                </button>
+            </div>
         </div>
-        <div class="deity-card" id="card-brahma" onclick="selectDeity('brahma')">
-            <div class="deity-emoji">🷪</div>
-            <div class="deity-name">Lord Brahma</div>
+
+        <!-- STEP 2: INPUT PROMPT & DISPLAY -->
+        <div id="step-2" class="hidden space-y-4">
+            <div id="shiva-warning" class="hidden p-3 bg-red-950/40 border border-red-500/40 rounded-xl text-xs text-red-300 font-bold tracking-wide animate-pulse">
+                🔥 WARNING: Extreme bluntness ahead. Proceed only if you can handle the raw truth.
+            </div>
+            <h2 id="selected-god-title" class="cosmic-title text-lg font-bold tracking-wide text-slate-200"></h2>
+            
+            <div id="textarea-container">
+                <textarea id="user-prompt" rows="5" class="w-full p-4 rounded-2xl bg-slate-900/90 border border-slate-800 focus:outline-none focus:border-amber-400 text-white transition-all text-sm placeholder-slate-500" placeholder="Type your deepest dilemma... (Supports Odia, Hindi, English)"></textarea>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="goBack()" class="w-1/3 bg-slate-800 hover:bg-slate-700 py-3 rounded-xl font-bold transition-all text-sm">Back</button>
+                <button onclick="getAdvice()" class="w-2/3 bg-amber-500 hover:bg-amber-600 text-slate-950 py-3 rounded-xl font-black shadow-lg shadow-amber-500/10 transition-all text-sm">Seek Counsel</button>
+            </div>
         </div>
-        <div class="deity-card" id="card-shiva" onclick="selectDeity('shiva')">
-            <div class="deity-emoji">🔱</div>
-            <div class="deity-name">Lord Shiva</div>
+
+        <!-- LOADING & RESULTS CONTAINER -->
+        <div id="result-box" class="hidden p-5 rounded-2xl bg-slate-900/90 border border-slate-800 text-left space-y-4 shadow-xl">
+            <!-- Bound script execution parsing with clear scannable custom layout rendering support -->
+            <p id="output-text" class="text-sm leading-relaxed text-slate-300解决方案 markdown-rendered-box"></p>
+            <button id="copy-btn" onclick="copyToClipboard()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded-lg text-amber-400 transition-all">
+                📸 Copy for Instagram Story Screenshot
+            </button>
+        </div>
+
+        <div class="text-[9px] text-slate-700 font-mono tracking-widest pt-2 uppercase">
+            Proprietary Quantum Engine // Maintained by @YOUR_HANDLES
         </div>
     </div>
 
-    <!-- Interface Prompt Canvas -->
-    <textarea id="userPrompt" rows="6" placeholder="State your dilemma clearly, ask about your relationship patterns, or input your birth sign for astrological guidance..."></textarea>
-    <button id="submitBtn" onclick="seekCounsel()">Seek Counsel</button>
+    <!-- AUDIO ENGINE IMPLEMENTATION -->
+    <script>
+        let selectedGod = "";
+        let currentBackgroundMusic = null;
+        let actionAudioSound = null;
 
-    <!-- Structured Render Output Display -->
-    <div class="output-box" id="outputCard"></div>
-</div>
-
-<script>
-    let selectedGod = '';
-
-    // Audio tracking map for local instrumental cues
-    const tracks = {
-        'krishna': '/static/flute.mp3',
-        'shiva': '/static/dambru.mp3',
-        'brahma': '/static/om.mp3'
-    };
-
-    function executeTrack(god) {
-        if (tracks[god]) {
-            let audioObj = new Audio(tracks[god]);
-            audioObj.volume = 0.5;
-            audioObj.play().catch(err => console.log("Audio trigger blocked until user action occurs."));
-        }
-    }
-
-    function selectDeity(god) {
-        selectedGod = god;
-        document.querySelectorAll('.deity-card').forEach(card => card.classList.remove('active'));
-        document.getElementById(`card-${god}`).classList.add('active');
-        
-        // Immediate audio sound on deck click
-        executeTrack(god);
-    }
-
-    async function seekCounsel() {
-        const promptInput = document.getElementById('userPrompt').value.trim();
-        const outputCard = document.getElementById('outputCard');
-        const submitBtn = document.getElementById('submitBtn');
-
-        if (!selectedGod) {
-            alert('Please select a deity card first to establish a divine connection.');
-            return;
-        }
-        if (!promptInput) {
-            alert('Please write out your query before seeking counsel.');
-            return;
-        }
-
-        // Play audio track again right as they submit the question
-        executeTrack(selectedGod);
-
-        submitBtn.disabled = true;
-        submitBtn.innerText = "Aligning Celestial Paths...";
-        outputCard.style.display = "block";
-        outputCard.innerHTML = "<em>Reading your stars and ancient logs... Please wait in quiet reflection.</em>";
-
-        try {
-            const response = await fetch('/get-advice', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    god: selectedGod,
-                    prompt: promptInput
-                })
-            });
-
-            const data = await response.json();
-            submitBtn.disabled = false;
-            submitBtn.innerText = "Seek Counsel";
-
-            if (data.advice) {
-                outputCard.innerHTML = marked.parse(data.advice);
-            } else if (data.error) {
-                outputCard.innerHTML = `<span style="color: #f85149;">${marked.parse(data.error)}</span>`;
+        // Upgraded asset tracks map referencing your direct physical static tracks perfectly
+        const AUDIO_ASSETS = {
+            krishna: {
+                bg: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", 
+                action: "/static/flute.mp3" 
+            },
+            brahma: {
+                bg: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", 
+                action: "/static/om.mp3" 
+            },
+            shiva: {
+                bg: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", 
+                action: "/static/dambru.mp3" 
             }
-        } catch (error) {
-            submitBtn.disabled = false;
-            submitBtn.innerText = "Seek Counsel";
-            outputCard.innerHTML = "<span style='color: #f85149;'>The line timed out. Re-submit your thoughts.</span>";
-        }
-    }
-</script>
+        };
 
+        function playBackgroundMusic(god) {
+            if (currentBackgroundMusic) {
+                currentBackgroundMusic.pause();
+            }
+            currentBackgroundMusic = new Audio(AUDIO_ASSETS[god].bg);
+            currentBackgroundMusic.loop = true;
+            currentBackgroundMusic.volume = 0.20; 
+            currentBackgroundMusic.play().catch(e => console.log("Audio awaiting user interaction metrics."));
+        }
+
+        function playActionSound(god) {
+            actionAudioSound = new Audio(AUDIO_ASSETS[god].action);
+            actionAudioSound.volume = 0.6; // Crisp distinct response sound setting
+            actionAudioSound.play().catch(e => console.log("Audio play blocked"));
+        }
+
+        function selectDeity(god) {
+            selectedGod = god;
+            document.getElementById('step-1').classList.add('hidden');
+            document.getElementById('step-2').classList.remove('hidden');
+            document.getElementById('selected-god-title').innerText = `Presenting your heart to Lord ${god.charAt(0).toUpperCase() + god.slice(1)}`;
+            
+            if(god === 'shiva') {
+                document.getElementById('shiva-warning').classList.remove('hidden');
+            } else {
+                document.getElementById('shiva-warning').classList.add('hidden');
+            }
+
+            playBackgroundMusic(god);
+        }
+
+        function goBack() {
+            if (currentBackgroundMusic) currentBackgroundMusic.pause();
+            document.getElementById('step-2').classList.add('hidden');
+            document.getElementById('result-box').classList.add('hidden');
+            document.getElementById('step-1').classList.remove('hidden');
+            document.getElementById('user-prompt').value = "";
+        }
+
+        async function getAdvice() {
+            const promptInput = document.getElementById('user-prompt');
+            const prompt = promptInput.value;
+            const outputBox = document.getElementById('result-box');
+            const outputText = document.getElementById('output-text');
+            const container = document.getElementById('textarea-container');
+            
+            if(!prompt.trim()) return alert("Speak your mind first.");
+
+            if(/[\d+\-*/=]/.test(prompt) && (prompt.includes('+') || prompt.includes('*') || prompt.includes('/') || prompt.includes('-'))) {
+                container.classList.add('shake-element');
+                setTimeout(() => container.classList.remove('shake-element'), 400);
+                outputBox.classList.remove('hidden');
+                outputBox.scrollIntoView({ behavior: 'smooth' });
+                outputText.innerHTML = `<span class="text-red-400 font-bold">🔱 COSMIC EXCEPTION: Alignment Shattered!</span>\n\nDo not bring your mathematics to the divine realm. Solve calculations elsewhere; bring only the vulnerabilities of your mortal heart.`;
+                return;
+            }
+            
+            // Play your local dedicated instrumental sound file right on click trigger
+            playActionSound(selectedGod); 
+            outputBox.classList.remove('hidden');
+            outputBox.scrollIntoView({ behavior: 'smooth' });
+            outputText.innerText = "Aligning cosmic energy... listening to your soul...";
+
+            try {
+                const response = await fetch('/get-advice', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ god: selectedGod, prompt: prompt })
+                });
+                const data = await response.json();
+                
+                if (data.advice) {
+                    // Integrates markdown renderer parsing for text/bold structures cleanly
+                    outputText.innerHTML = marked.parse(data.advice);
+                } else {
+                    outputText.innerHTML = marked.parse(data.error || "Mystic disturbance encountered.");
+                }
+            } catch (err) {
+                outputText.innerText = "The cosmos are busy right now. Synchronizing alignment... Please try again.";
+            }
+        }
+
+        function copyToClipboard() {
+            const text = document.getElementById('output-text').innerText;
+            const formattedText = `🌌 Cosmic Counsel Advice from Lord ${selectedGod.toUpperCase()}:\n\n"${text}"\n\n🔮 Try it here: ${window.location.href} | Built by @YOUR_HANDLES`;
+            navigator.clipboard.writeText(formattedText);
+            const btn = document.getElementById('copy-btn');
+            btn.innerText = "Copied! Paste straight to your Instagram Story!";
+            setTimeout(() => btn.innerText = "📸 Copy for Instagram Story Screenshot", 3000);
+        }
+    </script>
 </body>
 </html>
