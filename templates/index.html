@@ -15,70 +15,171 @@
         @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-10px); } 40%, 80% { transform: translateX(10px); } }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen p-4">
-    <div class="max-w-md w-full text-center space-y-8 bg-slate-950/70 p-6 rounded-3xl border border-purple-500/10 backdrop-blur-md">
-        <h1 class="cosmic-title text-3xl font-black text-amber-400">🕉 COSMIC COUNSEL 🕉</h1>
-        
-        <div id="step-1" class="space-y-4">
-            <h2 class="text-sm text-slate-300">Whose presence do you summon?</h2>
-            <button onclick="selectDeity('krishna')" class="god-card w-full p-4 bg-amber-950/20 border border-amber-500/30 rounded-2xl text-left">
-                <span class="block text-lg font-bold text-amber-300">🪈 Lord Krishna</span>
-            </button>
-            <button onclick="selectDeity('brahma')" class="god-card w-full p-4 bg-purple-950/20 border border-purple-500/30 rounded-2xl text-left">
-                <span class="block text-lg font-bold text-purple-300">🪷 Lord Brahma</span>
-            </button>
-            <button onclick="selectDeity('shiva')" class="god-card w-full p-4 bg-blue-950/20 border border-blue-500/30 rounded-2xl text-left">
-                <span class="block text-lg font-bold text-blue-300">🔱 Lord Shiva</span>
-            </button>
-        </div>
+<body class="flex flex-col items-center justify-center min-h-screen p-4 relative overflow-x-hidden">
 
-        <div id="step-2" class="hidden space-y-4">
-            <h2 id="selected-god-title" class="cosmic-title text-lg text-slate-200"></h2>
-            <textarea id="user-prompt" rows="5" class="w-full p-4 rounded-2xl bg-slate-900 border border-slate-800 text-white text-sm" placeholder="Type your dilemma..."></textarea>
-            <div class="flex gap-3">
-                <button onclick="goBack()" class="w-1/3 bg-slate-800 py-3 rounded-xl font-bold text-sm">Back</button>
-                <button onclick="getAdvice()" class="w-2/3 bg-amber-500 text-slate-950 py-3 rounded-xl font-black text-sm">Seek Counsel</button>
+    <div class="max-w-md w-full text-center space-y-8 bg-slate-950/70 p-6 rounded-3xl border border-purple-500/10 backdrop-blur-md relative z-10">
+        <h1 class="cosmic-title text-3xl font-black text-amber-400 tracking-widest drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]">🕉 COSMIC COUNSEL 🕉</h1>
+        <p class="text-xs text-slate-400 tracking-wider uppercase">Seek emotional clarity. No equations. Only divine reality.</p>
+
+        <!-- STEP 1: SELECT DEITY -->
+        <div id="step-1" class="space-y-6">
+            <h2 class="text-sm font-medium text-slate-300 tracking-wide">Whose presence do you summon?</h2>
+            <div class="grid grid-cols-1 gap-4">
+                <button onclick="selectDeity('krishna')" class="god-card w-full p-4 bg-amber-950/20 border border-amber-500/30 rounded-2xl flex items-center justify-between group">
+                    <div class="text-left">
+                        <span class="block text-lg font-bold text-amber-300">🪈 Lord Krishna</span>
+                        <span class="text-xs text-slate-400">Warm, playful, reassuring & jolly advice</span>
+                    </div>
+                    <span class="text-xl opacity-40 group-hover:opacity-100 transition-all">→</span>
+                </button>
+                <button onclick="selectDeity('brahma')" class="god-card w-full p-4 bg-purple-950/20 border border-purple-500/30 rounded-2xl flex items-center justify-between group">
+                    <div class="text-left">
+                        <span class="block text-lg font-bold text-purple-300">🪷 Lord Brahma</span>
+                        <span class="text-xs text-slate-400">Highly objective, stable & mature wisdom</span>
+                    </div>
+                    <span class="text-xl opacity-40 group-hover:opacity-100 transition-all">→</span>
+                </button>
+                <button onclick="selectDeity('shiva')" class="god-card w-full p-4 bg-blue-950/20 border border-blue-500/30 rounded-2xl flex items-center justify-between group">
+                    <div class="text-left">
+                        <span class="block text-lg font-bold text-blue-300">🔱 Lord Shiva</span>
+                        <span class="text-xs text-red-400/80 font-semibold">⚠️ Raw, aggressive, intense reality</span>
+                    </div>
+                    <span class="text-xl opacity-40 group-hover:opacity-100 transition-all">→</span>
+                </button>
             </div>
         </div>
 
-        <div id="result-box" class="hidden p-5 rounded-2xl bg-slate-900 border border-slate-800 text-left space-y-4">
-            <p id="output-text" class="text-sm text-slate-300 whitespace-pre-line"></p>
-            <button id="copy-btn" onclick="copyToClipboard()" class="w-full py-2 bg-slate-800 text-xs font-bold rounded-lg text-amber-400">📸 Copy for Instagram</button>
+        <!-- STEP 2: INPUT PROMPT & DISPLAY -->
+        <div id="step-2" class="hidden space-y-4">
+            <h2 id="selected-god-title" class="cosmic-title text-lg font-bold tracking-wide text-slate-200"></h2>
+            
+            <div id="textarea-container">
+                <textarea id="user-prompt" rows="5" class="w-full p-4 rounded-2xl bg-slate-900/90 border border-slate-800 focus:outline-none focus:border-amber-400 text-white transition-all text-sm placeholder-slate-500" placeholder="Type your deepest dilemma..."></textarea>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="goBack()" class="w-1/3 bg-slate-800 hover:bg-slate-700 py-3 rounded-xl font-bold transition-all text-sm">Back</button>
+                <button onclick="getAdvice()" class="w-2/3 bg-amber-500 hover:bg-amber-600 text-slate-950 py-3 rounded-xl font-black shadow-lg shadow-amber-500/10 transition-all text-sm">Seek Counsel</button>
+            </div>
+        </div>
+
+        <!-- LOADING & RESULTS CONTAINER -->
+        <div id="result-box" class="hidden p-5 rounded-2xl bg-slate-900/90 border border-slate-800 text-left space-y-4 shadow-xl">
+            <p id="output-text" class="text-sm leading-relaxed text-slate-300 whitespace-pre-line"></p>
+            <button id="copy-btn" onclick="copyToClipboard()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded-lg text-amber-400 transition-all">
+                📸 Copy for Instagram Story Screenshot
+            </button>
         </div>
 
         <!-- FEEDBACK SECTION -->
-        <div class="pt-6 border-t border-slate-800">
-            <textarea id="user-feedback" rows="2" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs mb-2" placeholder="Feedback for improvement..."></textarea>
-            <button onclick="sendFeedback()" id="feedback-btn" class="w-full py-2 bg-slate-800 text-[10px] font-bold rounded-lg text-slate-300">Submit Feedback</button>
+        <div class="pt-6 border-t border-slate-800 mt-6">
+            <h3 class="text-[10px] text-slate-500 uppercase tracking-widest mb-3">Share your thoughts</h3>
+            <div id="feedback-area" class="space-y-2">
+                <textarea id="user-feedback" rows="2" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs placeholder-slate-600 focus:border-amber-400 focus:outline-none" placeholder="How can the divine improve?"></textarea>
+                <button onclick="sendFeedback()" id="feedback-btn" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-[10px] font-bold rounded-lg text-slate-300 transition-all">Submit Feedback</button>
+            </div>
         </div>
 
-        <div class="text-[9px] text-slate-700 font-mono pt-2 uppercase">Proprietary Engine // Maintained by @debiprasad.ojha</div>
+        <div class="text-[9px] text-slate-700 font-mono tracking-widest pt-2 uppercase">
+            Proprietary Quantum Engine // Maintained by @debiprasad.ojha
+        </div>
     </div>
 
+    <!-- MAIN ENGINE IMPLEMENTATION -->
     <script>
         let selectedGod = "";
-        function selectDeity(g) { selectedGod = g; document.getElementById('step-1').classList.add('hidden'); document.getElementById('step-2').classList.remove('hidden'); document.getElementById('selected-god-title').innerText = `Presenting to Lord ${g.charAt(0).toUpperCase() + g.slice(1)}`; }
-        function goBack() { document.getElementById('step-2').classList.add('hidden'); document.getElementById('result-box').classList.add('hidden'); document.getElementById('step-1').classList.remove('hidden'); }
-        
+
+        function selectDeity(god) {
+            selectedGod = god;
+            document.getElementById('step-1').classList.add('hidden');
+            document.getElementById('step-2').classList.remove('hidden');
+            document.getElementById('selected-god-title').innerText = `Presenting your heart to Lord ${god.charAt(0).toUpperCase() + god.slice(1)}`;
+        }
+
+        function goBack() {
+            document.getElementById('step-2').classList.add('hidden');
+            document.getElementById('result-box').classList.add('hidden');
+            document.getElementById('step-1').classList.remove('hidden');
+            document.getElementById('user-prompt').value = "";
+        }
+
         async function getAdvice() {
-            const prompt = document.getElementById('user-prompt').value;
-            if(/[\+\*\/=]/.test(prompt)) { alert("No math allowed!"); return; }
-            document.getElementById('result-box').classList.remove('hidden');
-            const res = await fetch('/get-advice', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ god: selectedGod, prompt }) });
-            const data = await res.json();
-            document.getElementById('output-text').innerText = data.advice;
+            const promptInput = document.getElementById('user-prompt');
+            const prompt = promptInput.value;
+            const outputBox = document.getElementById('result-box');
+            const outputText = document.getElementById('output-text');
+            const container = document.getElementById('textarea-container');
+            
+            if(!prompt.trim()) return alert("Speak your mind first.");
+
+            const hasMathSymbols = /[\+\*\/=]/.test(prompt);
+
+            if(hasMathSymbols) {
+                container.classList.add('shake-element');
+                setTimeout(() => container.classList.remove('shake-element'), 400);
+                outputBox.classList.remove('hidden');
+                outputBox.scrollIntoView({ behavior: 'smooth' });
+                outputText.innerHTML = `<span class="text-red-400 font-bold">🔱 COSMIC EXCEPTION: Alignment Shattered!</span>\n\nDo not bring your mathematics to the divine realm. Solve calculations elsewhere; bring only the vulnerabilities of your mortal heart.`;
+                return;
+            }
+            
+            outputBox.classList.remove('hidden');
+            outputBox.scrollIntoView({ behavior: 'smooth' });
+            outputText.innerText = "Aligning cosmic energy... listening to your soul...";
+
+            try {
+                const response = await fetch('/get-advice', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ god: selectedGod, prompt: prompt })
+                });
+                const data = await response.json();
+                
+                if (data.advice) {
+                    outputText.innerText = data.advice;
+                } else {
+                    outputText.innerText = "The cosmos are busy right now. Synchronizing alignment... Please try again.";
+                }
+            } catch (err) {
+                outputText.innerText = "The cosmos are busy right now. Synchronizing alignment... Please try again.";
+            }
         }
 
         async function sendFeedback() {
-            const fb = document.getElementById('user-feedback').value;
-            if(!fb.trim()) return;
-            await fetch('/submit-feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ feedback: fb }) });
-            document.getElementById('feedback-btn').innerText = "Thank you!";
+            const feedbackInput = document.getElementById('user-feedback');
+            const btn = document.getElementById('feedback-btn');
+            const feedback = feedbackInput.value;
+            
+            if(!feedback.trim()) return;
+
+            btn.innerText = "Sending...";
+            try {
+                const response = await fetch('/submit-feedback', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ feedback: feedback })
+                });
+                if(response.ok) {
+                    feedbackInput.value = "";
+                    btn.innerText = "Thank you for your insight!";
+                    setTimeout(() => btn.innerText = "Submit Feedback", 3000);
+                } else {
+                    btn.innerText = "Error. Try again.";
+                    setTimeout(() => btn.innerText = "Submit Feedback", 3000);
+                }
+            } catch (err) {
+                btn.innerText = "Error. Try again.";
+                setTimeout(() => btn.innerText = "Submit Feedback", 3000);
+            }
         }
 
         function copyToClipboard() {
-            const text = `Cosmic Counsel from Lord ${selectedGod.toUpperCase()}:\n\n"${document.getElementById('output-text').innerText}"\n\nBuilt by @debiprasad.ojha`;
-            navigator.clipboard.writeText(text);
+            const text = document.getElementById('output-text').innerText;
+            const formattedText = `🌌 Cosmic Counsel Advice from Lord ${selectedGod.toUpperCase()}:\n\n"${text}"\n\n🔮 Try it here: ${window.location.href} | Built by @debiprasad.ojha`;
+            navigator.clipboard.writeText(formattedText);
+            const btn = document.getElementById('copy-btn');
+            btn.innerText = "Copied! Paste straight to your Instagram Story!";
+            setTimeout(() => btn.innerText = "📸 Copy for Instagram Story Screenshot", 3000);
         }
     </script>
 </body>
