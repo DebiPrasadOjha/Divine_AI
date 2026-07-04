@@ -19,10 +19,21 @@ if API_KEY:
 else:
     print("--- RENDER LOG ERROR: GEMINI_API_KEY IS MISSING IN ENVIRONMENT ---", file=sys.stderr, flush=True)
 
+# Enforcing ancient scripture referencing and unified response layout structural blocks
+STRUCTURED_RULE = (
+    "\n\nYou MUST format your entire response using the exact structure below. Do not use markdown headers (# or ##), bolding, or bullet lists. Separate the blocks with simple line breaks:\n\n"
+    "📜 DIVINE VERSE:\n"
+    "[Provide a highly relevant, authentic quote or paraphrased teaching from an ancient Indian scripture like the Bhagavad Gita, Upanishads, or Puranas that directly applies to their problem. Include the scripture name.]\n\n"
+    "✨ THE TRANSMISSION:\n"
+    "[Deliver your main advice here using your assigned character persona and tone. Address the core of their emotional dilemma directly.]\n\n"
+    "🕉️ MEDITATION PATH:\n"
+    "[Give them one actionable, distinct, single-sentence practical act or mental focus shift they can practice right now to clear their mind.]"
+)
+
 DEITY_PROMPTS = {
-    "krishna": "You are Lord Krishna. Provide warm, playful, deeply reassuring, and comforting advice. Use gentle wisdom.",
-    "brahma": "You are Lord Brahma. Provide highly objective, stable, detached, and ambiguous cosmic wisdom.",
-    "shiva": "You are Lord Shiva. Provide raw, intensely blunt, aggressive, and direct reality checks without sugarcoating."
+    "krishna": "You are Lord Krishna. Provide warm, playful, deeply reassuring, and comforting advice. Use gentle wisdom." + STRUCTURED_RULE,
+    "brahma": "You are Lord Brahma. Provide highly objective, stable, detached, and ambiguous cosmic wisdom." + STRUCTURED_RULE,
+    "shiva": "You are Lord Shiva. Provide raw, intensely blunt, aggressive, and direct reality checks without sugarcoating." + STRUCTURED_RULE
 }
 
 @app.route('/')
@@ -54,7 +65,6 @@ def get_advice():
 
         system_instruction = DEITY_PROMPTS[selected_god]
         
-        # Swapped target model identifier to the updated active tier to clear the Google API 404 exception
         model = genai.GenerativeModel(
             model_name="gemini-2.5-flash",
             system_instruction=system_instruction
@@ -76,3 +86,4 @@ def get_advice():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
