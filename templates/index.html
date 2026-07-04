@@ -27,28 +27,22 @@
             max-width: 500px;
             text-align: center;
         }
-        h1 { color: #ffffff; margin-bottom: 5px; font-weight: 600; }
-        .subtitle { font-size: 14px; color: #8b949e; margin-bottom: 25px; }
-        
-        /* Mystic Sun & Dot Divider (Replaces Gemini Sparkles) */
-        .spiritual-divider {
-            margin: 15px auto 25px auto;
+        h1 { 
+            color: #ffffff; 
+            margin-bottom: 5px; 
+            font-weight: 600; 
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
+        }
+        .subtitle { font-size: 14px; color: #8b949e; margin-bottom: 25px; }
+        
+        /* Styled Sun Icon replacing the Gemini Stars */
+        .vibe-symbol {
             color: var(--accent-gold);
-            font-size: 14px;
-            letter-spacing: 2px;
-        }
-        .spiritual-divider .line {
-            width: 80px;
-            height: 1px;
-            background: linear-gradient(to right, transparent, var(--accent-gold), transparent);
-        }
-        .spiritual-divider .symbol {
-            font-weight: bold;
-            opacity: 0.9;
+            font-size: 20px;
+            display: inline-block;
         }
 
         /* Deity Selection Cards */
@@ -127,16 +121,10 @@
 <body>
 
 <div class="container">
-    <h1>Divine Counsel</h1>
+    <!-- Restored precise header with custom vibe symbol -->
+    <h1><span class="vibe-symbol">☼</span> Divine Counsel <span class="vibe-symbol">☼</span></h1>
     <div class="subtitle">Receive timeless perspective on life's complications</div>
     
-    <!-- Clean, branded-free spiritual accent element -->
-    <div class="spiritual-divider">
-        <div class="line"></div>
-        <div class="symbol">• ☼ •</div>
-        <div class="line"></div>
-    </div>
-
     <!-- Deity Layout Grid -->
     <div class="deity-grid">
         <div class="deity-card" id="card-krishna" onclick="selectDeity('krishna')">
