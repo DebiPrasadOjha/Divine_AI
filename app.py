@@ -21,7 +21,7 @@ else:
 
 DEITY_PROMPTS = {
     "krishna": "You are Lord Krishna. Provide warm, playful, deeply reassuring, and comforting advice. Use gentle wisdom.",
-    "brahma": "You are Lord Brahma. Provide highly objective, stable, detached, and mature cosmic wisdom.",
+    "brahma": "You are Lord Brahma. Provide highly objective, stable, detached, and ambiguous cosmic wisdom.",
     "shiva": "You are Lord Shiva. Provide raw, intensely blunt, aggressive, and direct reality checks without sugarcoating."
 }
 
@@ -32,9 +32,8 @@ def home():
 @app.route('/get-advice', methods=['POST'])
 def get_advice():
     try:
-        # Check variable before parsing payload
         if not os.environ.get("GEMINI_API_KEY"):
-            print("--- RENDER LOG ERROR: REQUEST DECLINED, NO KEY FOUND ---", file=sys.stderr, flush=True)
+            print("--- RENDER LOG ERROR: REQUEST DECLINED, NO KEY FOUND IN ENVIRONMENT ---", file=sys.stderr, flush=True)
             return jsonify({"status": "failed"}), 500
 
         data = request.get_json()
@@ -46,14 +45,13 @@ def get_advice():
         user_prompt = data.get('prompt', '').strip()
 
         if not selected_god or not user_prompt:
-            print(f"--- RENDER LOG ERROR: MISSING DATA. GOD: {selected_god}, PROMPT: {bool(user_prompt)} ---", file=sys.stderr, flush=True)
+            print(f"--- RENDER LOG ERROR: MISSING DATA. GOD: {selected_god}, PROMPT PROVIDED: {bool(user_prompt)} ---", file=sys.stderr, flush=True)
             return jsonify({"status": "failed"}), 400
 
         if selected_god not in DEITY_PROMPTS:
             print(f"--- RENDER LOG ERROR: INVALID GOD ATTEMPTED: {selected_god} ---", file=sys.stderr, flush=True)
             return jsonify({"status": "failed"}), 400
 
-        # Run Generation Process
         system_instruction = DEITY_PROMPTS[selected_god]
         model = genai.GenerativeModel(
             model_name="gemini-1.5-flash",
@@ -69,7 +67,6 @@ def get_advice():
             return jsonify({"status": "failed"}), 500
 
     except Exception as e:
-        # Pushes the complete full raw traceback stack to your Render logs terminal view
         print("--- RENDER LOG ERROR: CRITICAL RUNTIME CRASH ---", file=sys.stderr, flush=True)
         traceback.print_exc(file=sys.stderr)
         sys.stderr.flush()
