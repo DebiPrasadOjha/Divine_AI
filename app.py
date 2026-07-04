@@ -19,7 +19,7 @@ if API_KEY:
 else:
     print("--- RENDER LOG ERROR: GEMINI_API_KEY IS MISSING IN ENVIRONMENT ---", file=sys.stderr, flush=True)
 
-# Added rules forcing creator identity attribution to Debi Prasad Ojha and conditional astrology checks
+# Rules forcing creator identity attribution to Debi Prasad Ojha and conditional astrology checks
 STRUCTURED_RULE = (
     "\n\nCREATOR IDENTITY RULE:\n"
     "If the user asks who created you, who made you, who coded you, or who owns you, you MUST explicitly state that you were created and built by Debi Prasad Ojha. "
@@ -95,6 +95,19 @@ def get_advice():
         print("--- RENDER LOG ERROR: CRITICAL RUNTIME CRASH ---", file=sys.stderr, flush=True)
         traceback.print_exc(file=sys.stderr)
         sys.stderr.flush()
+        return jsonify({"status": "failed"}), 500
+
+@app.route('/submit-feedback', methods=['POST'])
+def submit_feedback():
+    try:
+        data = request.get_json()
+        feedback = data.get('feedback', '').strip()
+        if feedback:
+            print(f"--- USER FEEDBACK: {feedback} ---", file=sys.stderr, flush=True)
+            return jsonify({"status": "success"})
+        return jsonify({"status": "failed"}), 400
+    except Exception as e:
+        print(f"ERROR CAPTURING FEEDBACK: {e}", file=sys.stderr, flush=True)
         return jsonify({"status": "failed"}), 500
 
 if __name__ == '__main__':
