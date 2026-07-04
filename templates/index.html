@@ -23,7 +23,7 @@
 <body class="flex flex-col items-center justify-center min-h-screen p-4 relative overflow-x-hidden">
 
     <div class="max-w-md w-full text-center space-y-8 bg-slate-950/70 p-6 rounded-3xl border border-purple-500/10 backdrop-blur-md relative z-10">
-        <!-- Replaced ✨ sparkles with traditional 🕉 Om symbols for pure spiritual branding alignment -->
+        <!-- Replaced sparkles with traditional Om symbols -->
         <h1 class="cosmic-title text-3xl font-black text-amber-400 tracking-widest drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]">🕉 COSMIC COUNSEL 🕉</h1>
         <p class="text-xs text-slate-400 tracking-wider uppercase">Seek emotional clarity. No equations. Only divine reality.</p>
 
@@ -74,8 +74,7 @@
 
         <!-- LOADING & RESULTS CONTAINER -->
         <div id="result-box" class="hidden p-5 rounded-2xl bg-slate-900/90 border border-slate-800 text-left space-y-4 shadow-xl">
-            <!-- Bound script execution parsing with clear scannable custom layout rendering support -->
-            <p id="output-text" class="text-sm leading-relaxed text-slate-300解决方案 markdown-rendered-box"></p>
+            <p id="output-text" class="text-sm leading-relaxed text-slate-300 whitespace-pre-line"></p>
             <button id="copy-btn" onclick="copyToClipboard()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded-lg text-amber-400 transition-all">
                 📸 Copy for Instagram Story Screenshot
             </button>
@@ -92,7 +91,6 @@
         let currentBackgroundMusic = null;
         let actionAudioSound = null;
 
-        // Upgraded asset tracks map referencing your direct physical static tracks perfectly
         const AUDIO_ASSETS = {
             krishna: {
                 bg: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", 
@@ -115,12 +113,12 @@
             currentBackgroundMusic = new Audio(AUDIO_ASSETS[god].bg);
             currentBackgroundMusic.loop = true;
             currentBackgroundMusic.volume = 0.20; 
-            currentBackgroundMusic.play().catch(e => console.log("Audio awaiting user interaction metrics."));
+            currentBackgroundMusic.play().catch(e => console.log("Audio awaiting user interaction."));
         }
 
         function playActionSound(god) {
             actionAudioSound = new Audio(AUDIO_ASSETS[god].action);
-            actionAudioSound.volume = 0.6; // Crisp distinct response sound setting
+            actionAudioSound.volume = 0.6;
             actionAudioSound.play().catch(e => console.log("Audio play blocked"));
         }
 
@@ -165,7 +163,6 @@
                 return;
             }
             
-            // Play your local dedicated instrumental sound file right on click trigger
             playActionSound(selectedGod); 
             outputBox.classList.remove('hidden');
             outputBox.scrollIntoView({ behavior: 'smooth' });
@@ -179,16 +176,20 @@
                 });
                 const data = await response.json();
                 
+                // If the backend sent an advice string, display it. 
+                // If it sent back an error response, display the clean fallback text without showing technical error strings on-screen.
                 if (data.advice) {
-                    // Integrates markdown renderer parsing for text/bold structures cleanly
-                    outputText.innerHTML = marked.parse(data.advice);
+                    outputText.innerText = data.advice;
                 } else {
-                    outputText.innerHTML = marked.parse(data.error || "Mystic disturbance encountered.");
+                    outputText.innerText = "The cosmos are busy right now. Synchronizing alignment... Please try again.";
                 }
             } catch (err) {
+                // Network or internal server errors fail silently on screen
                 outputText.innerText = "The cosmos are busy right now. Synchronizing alignment... Please try again.";
             }
         }
+
+        document.getElementById('copy-btn').style.display = 'none';
 
         function copyToClipboard() {
             const text = document.getElementById('output-text').innerText;
