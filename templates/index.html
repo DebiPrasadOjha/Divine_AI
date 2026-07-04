@@ -23,7 +23,6 @@
 <body class="flex flex-col items-center justify-center min-h-screen p-4 relative overflow-x-hidden">
 
     <div class="max-w-md w-full text-center space-y-8 bg-slate-950/70 p-6 rounded-3xl border border-purple-500/10 backdrop-blur-md relative z-10">
-        <!-- Replaced sparkles with traditional Om symbols -->
         <h1 class="cosmic-title text-3xl font-black text-amber-400 tracking-widest drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]">🕉 COSMIC COUNSEL 🕉</h1>
         <p class="text-xs text-slate-400 tracking-wider uppercase">Seek emotional clarity. No equations. Only divine reality.</p>
 
@@ -85,42 +84,9 @@
         </div>
     </div>
 
-    <!-- AUDIO ENGINE IMPLEMENTATION -->
+    <!-- MAIN ENGINE IMPLEMENTATION -->
     <script>
         let selectedGod = "";
-        let currentBackgroundMusic = null;
-        let actionAudioSound = null;
-
-        const AUDIO_ASSETS = {
-            krishna: {
-                bg: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", 
-                action: "/static/flute.mp3" 
-            },
-            brahma: {
-                bg: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", 
-                action: "/static/om.mp3" 
-            },
-            shiva: {
-                bg: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", 
-                action: "/static/dambru.mp3" 
-            }
-        };
-
-        function playBackgroundMusic(god) {
-            if (currentBackgroundMusic) {
-                currentBackgroundMusic.pause();
-            }
-            currentBackgroundMusic = new Audio(AUDIO_ASSETS[god].bg);
-            currentBackgroundMusic.loop = true;
-            currentBackgroundMusic.volume = 0.20; 
-            currentBackgroundMusic.play().catch(e => console.log("Audio awaiting user interaction."));
-        }
-
-        function playActionSound(god) {
-            actionAudioSound = new Audio(AUDIO_ASSETS[god].action);
-            actionAudioSound.volume = 0.6;
-            actionAudioSound.play().catch(e => console.log("Audio play blocked"));
-        }
 
         function selectDeity(god) {
             selectedGod = god;
@@ -133,12 +99,9 @@
             } else {
                 document.getElementById('shiva-warning').classList.add('hidden');
             }
-
-            playBackgroundMusic(god);
         }
 
         function goBack() {
-            if (currentBackgroundMusic) currentBackgroundMusic.pause();
             document.getElementById('step-2').classList.add('hidden');
             document.getElementById('result-box').classList.add('hidden');
             document.getElementById('step-1').classList.remove('hidden');
@@ -163,7 +126,6 @@
                 return;
             }
             
-            playActionSound(selectedGod); 
             outputBox.classList.remove('hidden');
             outputBox.scrollIntoView({ behavior: 'smooth' });
             outputText.innerText = "Aligning cosmic energy... listening to your soul...";
@@ -176,20 +138,15 @@
                 });
                 const data = await response.json();
                 
-                // If the backend sent an advice string, display it. 
-                // If it sent back an error response, display the clean fallback text without showing technical error strings on-screen.
                 if (data.advice) {
                     outputText.innerText = data.advice;
                 } else {
                     outputText.innerText = "The cosmos are busy right now. Synchronizing alignment... Please try again.";
                 }
             } catch (err) {
-                // Network or internal server errors fail silently on screen
                 outputText.innerText = "The cosmos are busy right now. Synchronizing alignment... Please try again.";
             }
         }
-
-        document.getElementById('copy-btn').style.display = 'none';
 
         function copyToClipboard() {
             const text = document.getElementById('output-text').innerText;
