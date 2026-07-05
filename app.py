@@ -84,11 +84,23 @@ def get_advice():
         )
         
         response = model.generate_content(user_prompt)
+        advice_text = response.text if response and response.text else "The cosmos are busy right now."
+
+        # Extract location data from standard header routing keys
+        country = request.headers.get("X-Region", "Unknown Region")
+        city = request.headers.get("X-Loc", "Unknown Location")
         
+        # Comprehensive log structure layout 
+        print("\n================ COSMIC SESSION LOG ================", file=sys.stderr, flush=True)
+        print(f"📍 LOCATION : City/Geo: {city} | Country/Region: {country}", file=sys.stderr, flush=True)
+        print(f"🙏 SUMMONED : Lord {selected_god.upper()}", file=sys.stderr, flush=True)
+        print(f"📝 PROMPT   : {user_prompt}", file=sys.stderr, flush=True)
+        print(f"🔮 RESPONSE :\n{advice_text}", file=sys.stderr, flush=True)
+        print("====================================================\n", file=sys.stderr, flush=True)
+
         if response and response.text:
             return jsonify({"advice": response.text})
         else:
-            print("--- RENDER LOG ERROR: GEMINI SENT AN EMPTY RESPONSE STRING ---", file=sys.stderr, flush=True)
             return jsonify({"status": "failed"}), 500
 
     except Exception as e:
@@ -103,7 +115,13 @@ def submit_feedback():
         data = request.get_json()
         feedback = data.get('feedback', '').strip()
         if feedback:
-            print(f"--- USER FEEDBACK: {feedback} ---", file=sys.stderr, flush=True)
+            country = request.headers.get("X-Region", "Unknown Region")
+            city = request.headers.get("X-Loc", "Unknown Location")
+            
+            print("\n================ FEEDBACK LOG ================", file=sys.stderr, flush=True)
+            print(f"📍 FROM     : City/Geo: {city} | Country/Region: {country}", file=sys.stderr, flush=True)
+            print(f"💬 MESSAGE  : {feedback}", file=sys.stderr, flush=True)
+            print("==============================================\n", file=sys.stderr, flush=True)
             return jsonify({"status": "success"})
         return jsonify({"status": "failed"}), 400
     except Exception as e:
