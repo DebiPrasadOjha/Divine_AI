@@ -67,7 +67,7 @@
         <div id="result-box" class="hidden p-5 rounded-2xl bg-slate-900/90 border border-slate-800 text-left space-y-4 shadow-xl">
             <p id="output-text" class="text-sm leading-relaxed text-slate-300 whitespace-pre-line"></p>
             <button id="copy-btn" onclick="copyToClipboard()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded-lg text-amber-400 transition-all">
-                📸 Copy for Instagram Story Screenshot
+                Copy
             </button>
         </div>
 
@@ -178,8 +178,8 @@
             const formattedText = `🌌 Cosmic Counsel Advice from Lord ${selectedGod.toUpperCase()}:\n\n"${text}"\n\n🔮 Try it here: ${window.location.href} | Built by @debiprasad.ojha`;
             navigator.clipboard.writeText(formattedText);
             const btn = document.getElementById('copy-btn');
-            btn.innerText = "Copied! Paste straight to your Instagram Story!";
-            setTimeout(() => btn.innerText = "📸 Copy for Instagram Story Screenshot", 3000);
+            btn.innerText = "Copied!";
+            setTimeout(() => btn.innerText = "Copy", 3000);
         }
     </script>
 </body>
